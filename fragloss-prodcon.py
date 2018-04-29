@@ -46,54 +46,10 @@ class FragProdCon:
       self.print()
       exit(0)
 
-# DEPRECATED AND THUS NOT UPDATED
-  def send(self, num):
-    print("Sending", num, "entries")
-    sent=[]
-    cuck = False
-    for n in range(0, num):
-      # 'send' packet at tail
-      if self.buff[self.tail] != 0:
-        sent.append(self.buff[self.tail])
-        self.buff[self.tail] = 0
-
-      # lazy way to check to see if tail will pass head
-      dec = False
-      for s in range(0, pow(2, self.stride)):
-
-        self.tail = (self.tail + 1) % self.size
-
-        if self.tail == (self.head - pow(2, self.stride)) % self.size:
-#          if dec == False and self.stride != 0:
-#            print("Stride will decrease to", self.stride-1)
-          dec = True
-
-          if self.stride == 0:
-            print("No more packets to send after", n + 1)
-            break
-          
-      if dec:
-        if self.stride == 0:
-          cuck = True
-          break
-        else:
-          self.stride = self.stride - 1
-#          self.tail = ( self.tail - pow(2, self.stride)) % self.size
-    
-    # Sent packet checks
-    mincheck = [i for i in self.buff if i != 0]
-    if sorted(sent) == sent and (cuck == True or len(sent) == num) and (len(mincheck) == 0 or max(sent) < min(mincheck)):
-      print("Correctly sent:", sent)
-    else:
-      print("INCORRECTLY sent:", sent)
-      print("Something went wrong!")
-      self.print()
-      exit(0)
-
   def record(self, num):
     print("Recording", num, "entries")
     recorded=[]
-    for n in range(0, num):
+    for n in range(0, round(num/pow(2, self.stride))): # ignore some entries because of increased stride
       if pow(2, self.stride) > self.size/2:
         print("Stride value",pow(2, self.stride), "greater than size", self.size,": ignoring", num-n, "entries!")
         self.iter = self.iter + (num-n)*pow(2, self.stride)
@@ -137,11 +93,16 @@ class FragProdCon:
 
   def conclude(self):
     maxdiff = 0
+    avgdiff = 0
     for i in range(1, len(self.sent)):
-      diff = abs(self.sent[i - 1] - self.sent[i])
+      diff = abs(self.sent[i - 1] - self.sent[i]) - 1
+      avgdiff = avgdiff + diff
       if diff > maxdiff:
         maxdiff = diff
+    avgdiff = avgdiff / len(self.sent)
+
     print("Maximum consecutively missed blocks:", maxdiff)
+    print("Average of consecutively missed blocks:", avgdiff)
     print("Block writes:", self.writes)
     
 
