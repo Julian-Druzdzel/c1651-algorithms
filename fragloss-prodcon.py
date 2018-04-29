@@ -103,7 +103,9 @@ class FragProdCon:
 
     print("Maximum consecutively missed blocks:", maxdiff)
     print("Average of consecutively missed blocks:", avgdiff)
-    print("Block writes:", self.writes)
+    print("Average block writes:", sum(self.writes)/len(self.writes))
+    print("Max. of one block's writes:", max(self.writes))
+    print("Min. of one block's writes:", min(self.writes))
     
 
 def main():
@@ -118,7 +120,7 @@ def main():
   sen = int(input("Average number of consecutive data sends: "))
 
   print("Please enter a positive integer.")
-  dev = int(input("Standard deviation: "))
+  dev = int(input("Average variance: "))
 
   print("Please enter a positive integer.")
   for i in range(0, int(input("Number of record/send iterations: "))):
