@@ -70,7 +70,7 @@ class FragProdCon:
         self.head = (self.head + 1) % self.size
         if self.head == (self.tail - pow(2, self.stride)) % self.size:
           inc = True
-      if inc and pow(2, self.stride + 1) < self.size/2:
+      if inc:
         self.stride = self.stride + 1
 
   def print(self):
@@ -216,11 +216,13 @@ def main():
     while sens < 1:
       sens = sen + rand.randint(-dev, dev)
   # FRAG BUFF
-    frag_buff.record(recs)
-    frag_buff.send(sens)
+    if frag_buff.iter < num:
+      frag_buff.record(recs)
+      frag_buff.send(sens)
   # NAIVE BUFF
-    naive_buff.record(recs)
-    naive_buff.send(sens)
+    if naive_buff.iter < num:
+      naive_buff.record(recs)
+      naive_buff.send(sens)
 
   print()
   print("FRAGMENTED LOSS BUFFER:")
